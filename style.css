@@ -296,13 +296,13 @@ code, .mono { font-family: var(--mono); }
   width: 12px; height: 12px;
   border-radius: 50%;
 }
-.term-red { background: #ff5f56; }
-.term-yellow { background: #ffbd2e; }
-.term-green { background: #27c93f; }
+.dot-red { background: #ff5f56; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #27c93f; }
 .term-title {
   margin-left: 8px;
   font-size: 13px;
-  color: var(--text-dim);
+  color: #7d8590;
   font-family: var(--mono);
 }
 .terminal-body {
@@ -311,13 +311,14 @@ code, .mono { font-family: var(--mono); }
   font-size: 13.5px;
   line-height: 1.9;
   min-height: 340px;
+  color: #e6edf3;
 }
 .term-line { white-space: pre-wrap; word-break: break-all; }
-.prompt { color: var(--accent); font-weight: 700; }
+.prompt { color: #2dd4bf; font-weight: 700; }
 .cmd { color: #e6edf3; }
-.term-muted { color: var(--text-dim); }
-.term-green { color: var(--green); }
-.term-cyan { color: var(--cyan); }
+.term-muted { color: #7d8590; }
+.term-green { color: #56d364; }
+.term-cyan { color: #39c5cf; }
 .cursor { display: flex; align-items: center; gap: 6px; }
 .cursor-block {
   display: inline-block;
