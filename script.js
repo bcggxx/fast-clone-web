@@ -103,6 +103,11 @@
   }
 
   /* ---------- 主题切换 ---------- */
+  function applyTheme(next) {
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('fc-theme', next); } catch (e) {}
+  }
+
   function initTheme() {
     var saved = null;
     try { saved = localStorage.getItem('fc-theme'); } catch (e) {}
@@ -113,11 +118,64 @@
     }
     var toggle = $('#themeToggle');
     if (toggle) {
-      toggle.addEventListener('click', function () {
+      toggle.addEventListener('click', function (event) {
         var cur = document.documentElement.getAttribute('data-theme') || 'dark';
         var next = cur === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        try { localStorage.setItem('fc-theme', next); } catch (e) {}
+
+        // 以点击位置为圆心的圆形扩展全屏过渡动画
+        var rect = toggle.getBoundingClientRect();
+        var x = event.clientX || (rect.left + rect.width / 2);
+        var y = event.clientY || (rect.top + rect.height / 2);
+        var endRadius = Math.hypot(
+          Math.max(x, window.innerWidth - x),
+          Math.max(y, window.innerHeight - y)
+        );
+        var reduceMotion = window.matchMedia &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // 优先使用 View Transitions API
+        if (document.startViewTransition && !reduceMotion) {
+          var transition = document.startViewTransition(function () {
+            applyTheme(next);
+          });
+          transition.ready.then(function () {
+            document.documentElement.animate(
+              {
+                clipPath: [
+                  'circle(0px at ' + x + 'px ' + y + 'px)',
+                  'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'
+                ]
+              },
+              {
+                duration: 520,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                pseudoElement: '::view-transition-new(root)'
+              }
+            );
+          }).catch(function () { applyTheme(next); });
+        } else if (!reduceMotion) {
+          // 降级：全屏遮罩扫过动画
+          var bg = next === 'dark' ? '#0d1117' : '#ffffff';
+          var overlay = document.createElement('div');
+          overlay.className = 'theme-overlay';
+          overlay.style.background = bg;
+          overlay.style.left = x + 'px';
+          overlay.style.top = y + 'px';
+          overlay.style.width = (endRadius * 2) + 'px';
+          overlay.style.height = (endRadius * 2) + 'px';
+          overlay.style.marginLeft = -endRadius + 'px';
+          overlay.style.marginTop = -endRadius + 'px';
+          document.body.appendChild(overlay);
+          // 强制重排后启动动画
+          void overlay.offsetWidth;
+          overlay.classList.add('run');
+          applyTheme(next);
+          setTimeout(function () {
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+          }, 520);
+        } else {
+          applyTheme(next);
+        }
       });
     }
   }
@@ -217,6 +275,8 @@
       var raw = block.getAttribute('data-copy') || block.textContent;
       // 将换行符实体还原
       raw = raw.replace(/&#10;/g, '\n').replace(/&amp;/g, '&');
+      // 渲染为可见文本（代码块初始为空，命令内容存在 data-copy 中）
+      block.textContent = raw;
       block.addEventListener('click', function () {
         copyText(raw, block);
       });

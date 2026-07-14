@@ -748,6 +748,39 @@ tbody tr:hover { background: var(--bg-hover); }
 }
 .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
+/* ---------- 主题切换圆形过渡动画 ---------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 9999; }
+
+/* 降级：不支持 View Transitions 时的全屏遮罩淡入淡出 */
+.theme-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+}
+.theme-overlay.run {
+  animation: themeSweep 480ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes themeSweep {
+  0% { transform: scale(0); opacity: 0.9; border-radius: 50%; }
+  60% { opacity: 0.9; border-radius: 8%; }
+  100% { transform: scale(2.5); opacity: 0; border-radius: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+  .theme-overlay.run { animation: none; }
+}
+
 /* ---------- 响应式 ---------- */
 @media (max-width: 900px) {
   .hero-inner { grid-template-columns: 1fr; gap: 40px; }
