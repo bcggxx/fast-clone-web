@@ -20,17 +20,17 @@
 
   // 镜像数据（来源：mirror.json + README 实测延迟）
   var MIRRORS = [
-    { key: 'gh-proxy-org', name: 'gh-proxy.org', type: '前缀代理', latency: 15205, ip: 'dual', desc: '默认镜像', def: true },
-    { key: 'gh-proxy-v4', name: 'v4.gh-proxy.org', type: '前缀代理', latency: 405, ip: 'v4', desc: '仅 IPv4 智能解析' },
-    { key: 'gh-proxy-v6', name: 'v6.gh-proxy.org', type: '前缀代理', latency: 2253, ip: 'v6', desc: 'IPv6/IPv4 双栈' },
-    { key: 'gh-proxy-cdn', name: 'cdn.gh-proxy.org', type: '前缀代理', latency: 208, ip: 'dual', desc: 'Fastly CDN 加速' },
-    { key: 'kkgithub', name: 'kkgithub.com', type: '域名替换', latency: 15039, ip: 'dual', desc: '—' },
-    { key: 'github-akams', name: 'github.akams.cn', type: '前缀代理', latency: 61, ip: 'dual', desc: '—' },
-    { key: 'gitclone', name: 'gitclone.com', type: '路径前缀', latency: 15054, ip: 'v4', desc: 'CN 服务器' },
-    { key: 'github-ur1', name: 'github.ur1.fun', type: '域名替换', latency: 178, ip: 'dual', desc: '—' },
-    { key: 'gh-proxy-com', name: 'gh-proxy.com', type: '前缀代理', latency: 15039, ip: 'dual', desc: '—' },
-    { key: 'ghproxy-net', name: 'ghproxy.net', type: '前缀代理', latency: 240, ip: 'dual', desc: '—' },
-    { key: 'jihulab', name: 'jihulab.com', type: 'GitLab 极狐', latency: 87, ip: 'dual', desc: '—' }
+    { key: 'gh-proxy-org', name: 'gh-proxy.org', type: '前缀代理', latency: 188, ip: 'dual', desc: '默认镜像', def: true },
+    { key: 'gh-proxy-v4', name: 'v4.gh-proxy.org', type: '前缀代理', latency: 133, ip: 'v4', desc: '仅 IPv4 智能解析' },
+    { key: 'gh-proxy-v6', name: 'v6.gh-proxy.org', type: '前缀代理', latency: 206, ip: 'v6', desc: 'IPv6/IPv4 双栈' },
+    { key: 'gh-proxy-cdn', name: 'cdn.gh-proxy.org', type: '前缀代理', latency: 230, ip: 'dual', desc: 'Fastly CDN 加速' },
+    { key: 'kkgithub', name: 'kkgithub.com', type: '域名替换', latency: 225, ip: 'dual', desc: '—' },
+    { key: 'github-akams', name: 'github.akams.cn', type: '前缀代理', latency: 34, ip: 'dual', desc: '—' },
+    { key: 'gitclone', name: 'gitclone.com', type: '路径前缀', latency: 59, ip: 'v4', desc: 'CN 服务器' },
+    { key: 'github-ur1', name: 'github.ur1.fun', type: '域名替换', latency: 197, ip: 'dual', desc: '—' },
+    { key: 'gh-proxy-com', name: 'gh-proxy.com', type: '前缀代理', latency: 34, ip: 'dual', desc: '—' },
+    { key: 'ghproxy-net', name: 'ghproxy.net', type: '前缀代理', latency: 255, ip: 'dual', desc: '—' },
+    { key: 'jihulab', name: 'jihulab.com', type: 'GitLab 极狐', latency: 52, ip: 'dual', desc: '—' }
   ];
 
   var IP_LABELS = { dual: '双栈', v4: 'IPv4', v6: 'IPv6' };

@@ -159,7 +159,7 @@
           <tbody id="mirrorBody"></tbody>
         </table>
       </div>
-      <p class="table-note">延迟为 2026-07-14 本地网络 TCP 443 端口实测。本机无 IPv6：含 AAAA 记录的镜像会先尝试 v6 超时再回退 v4，延迟因此虚高（约 15s），实际 IPv4 连接正常；<code>gh-proxy-v6</code> 需 IPv6 环境，保留参考值。带 <span class="default-tag">默认</span> 标记为当前默认镜像。</p>
+      <p class="table-note">延迟为 2026-07-14 Windows TCP 443 端口实测，3 次测试取均值（WSL 环境下访问偏慢，故改用 Windows 原生网络测试）。带 <span class="default-tag">默认</span> 标记为当前默认镜像。</p>
     </div>
   </section>
 
