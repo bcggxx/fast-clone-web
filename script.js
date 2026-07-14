@@ -15,7 +15,8 @@
     { icon: '💾', title: '测速缓存', desc: '7 天内测速结果复用，<strong>避免重复测速</strong>浪费时间。' },
     { icon: '⚡', title: '每日状态报告', desc: 'GitHub Actions 每日自动测试镜像可达性并以 Release 发布报告。' },
     { icon: '🌍', title: '双语支持', desc: '中英文自动检测切换，<strong>开箱即用</strong>。' },
-    { icon: '⚙️', title: '高度可定制', desc: '编辑 mirror.json 即可增删镜像，<strong>下次运行即生效</strong>。' }
+    { icon: '⚙️', title: '高度可定制', desc: '编辑 mirror.json 即可增删镜像，<strong>下次运行即生效</strong>。' },
+    { icon: '📜', title: '开源许可', desc: '基于 MIT 许可证发布，可自由<strong>使用、修改、分发</strong>，含完整版权与免责声明。' }
   ];
 
   // 镜像数据（来源：mirror.json + README 实测延迟）
