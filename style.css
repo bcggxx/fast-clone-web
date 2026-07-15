@@ -280,15 +280,33 @@ code, .mono { font-family: var(--mono); }
 /* ---------- 终端 ---------- */
 .hero-terminal { perspective: 1200px; }
 .terminal {
+  position: relative;
   background: #010409;
   border: 1px solid var(--border);
   border-radius: 14px;
   box-shadow: var(--shadow), 0 0 60px rgba(45, 212, 191, 0.1);
   overflow: hidden;
-  transform: rotateY(-4deg) rotateX(2deg);
-  transition: transform 0.4s;
+  /* 跟随鼠标朝向：rotateY/rotateX 由 JS 通过 CSS 变量驱动 */
+  transform: rotateY(var(--term-ry, -4deg)) rotateX(var(--term-rx, 2deg));
+  transition: transform 0.18s ease-out;
+  will-change: transform;
 }
-.terminal:hover { transform: rotateY(0) rotateX(0); }
+/* 跟随光标的玻璃反光，强化「朝向」的立体感 */
+.terminal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--term-gx, 50%) var(--term-gy, 0%),
+    rgba(45, 212, 191, 0.18),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 2;
+}
+.terminal.glare::after { opacity: 1; }
 .terminal-bar {
   display: flex;
   align-items: center;
@@ -298,12 +316,32 @@ code, .mono { font-family: var(--mono); }
   border-bottom: 1px solid var(--border);
 }
 .term-dot {
+  position: relative;
   width: 12px; height: 12px;
   border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
 }
 .dot-red { background: #ff5f56; }
 .dot-yellow { background: #ffbd2e; }
 .dot-green { background: #27c93f; }
+/* macOS 风格：悬停窗口控制区时显示对应符号（红✕/黄−/绿+），仅装饰不做操作 */
+.term-dot::before {
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  user-select: none;
+}
+.terminal-bar:hover .term-dot::before { opacity: 1; }
+.dot-red::before { content: "\2715"; }      /* ✕ 关闭 */
+.dot-yellow::before { content: "\2212"; }   /* − 最小化 */
+.dot-green::before { content: "+"; }        /* + 最大化 */
 .term-title {
   margin-left: 8px;
   font-size: 13px;

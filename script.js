@@ -341,6 +341,48 @@
     }
   }
 
+  /* ---------- 终端跟随鼠标朝向 ---------- */
+  function initTerminalTilt() {
+    var wrap = $('.hero-terminal');
+    var term = $('.terminal', wrap);
+    if (!wrap || !term) return;
+    if (window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var MAX = 10; // 最大倾斜角度（度）
+    var DEFAULT_RY = -4, DEFAULT_RX = 2;
+
+    function onMove(e) {
+      var rect = term.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      // 光标在终端内的归一化坐标 0..1
+      var px = (e.clientX - rect.left) / rect.width;
+      var py = (e.clientY - rect.top) / rect.height;
+      px = Math.min(Math.max(px, 0), 1);
+      py = Math.min(Math.max(py, 0), 1);
+      // rotateY 随水平位置、rotateX 随垂直位置变化
+      var ry = (px - 0.5) * 2 * MAX;
+      var rx = (0.5 - py) * 2 * MAX;
+      term.style.setProperty('--term-ry', ry.toFixed(2) + 'deg');
+      term.style.setProperty('--term-rx', rx.toFixed(2) + 'deg');
+      term.style.setProperty('--term-gx', (px * 100).toFixed(1) + '%');
+      term.style.setProperty('--term-gy', (py * 100).toFixed(1) + '%');
+      term.classList.add('glare');
+    }
+
+    function onLeave() {
+      term.style.setProperty('--term-ry', DEFAULT_RY + 'deg');
+      term.style.setProperty('--term-rx', DEFAULT_RX + 'deg');
+      term.style.setProperty('--term-gx', '50%');
+      term.style.setProperty('--term-gy', '0%');
+      term.classList.remove('glare');
+    }
+
+    // 在容器上监听，使旋转时仍能稳定命中
+    wrap.addEventListener('pointermove', onMove);
+    wrap.addEventListener('pointerleave', onLeave);
+  }
+
   /* ---------- 导航高亮（可选轻量实现） ---------- */
   function initNavHighlight() {
     var sections = $all('section[id]');
@@ -376,6 +418,7 @@
     initCopy();
     initTabs();
     initTerminal();
+    initTerminalTilt();
     initNavHighlight();
   });
 })();
