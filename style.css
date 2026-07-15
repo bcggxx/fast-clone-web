@@ -137,7 +137,12 @@ code, .mono { font-family: var(--mono); }
   font-size: 19px;
   letter-spacing: -0.5px;
 }
-.nav-logo-icon { font-size: 22px; }
+.nav-logo-icon { font-size: 22px; display: inline-flex; align-items: center; }
+.nav-logo-icon img {
+  width: 22px; height: 22px;
+  border-radius: 6px; display: block;
+}
+.footer-brand .nav-logo-icon img { width: 26px; height: 26px; }
 .nav-links {
   display: flex;
   gap: 4px;

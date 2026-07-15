@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="fast-clone">
+  <defs>
+    <linearGradient id="fc-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 圆角渐变背景 -->
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#fc-bg)"/>
+
+  <!-- 克隆分支线：源节点 -> 镜像节点 -->
+  <path d="M168 200 C 168 300, 344 244, 344 308"
+        fill="none" stroke="#ffffff" stroke-width="36"
+        stroke-linecap="round"/>
+
+  <!-- 源节点（官方仓库） -->
+  <circle cx="168" cy="168" r="38" fill="#ffffff"/>
+  <!-- 镜像节点（克隆副本） -->
+  <circle cx="344" cy="344" r="38" fill="#ffffff"/>
+
+  <!-- 中心闪电：强调 fast -->
+  <path d="M278 176 L206 276 L244 276 L228 336 L306 224 L266 224 Z"
+        fill="#04201c"/>
+</svg>
