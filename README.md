@@ -1,4 +1,5 @@
 # fast-clone-web
+> English version: [README.en.md](README.en.md)
 
 [fast-clone](https://github.com/bcggxx/fast-clone) 项目的官方展示网站。
 
@@ -12,14 +13,15 @@
 - **代码块一键复制** — 点击即复制，带 toast 提示
 - **镜像列表实时渲染** — 数据集中在 `script.js`，更新方便
 - **终端演示动画** — Hero 区域带打字渐入效果
+- **中英双语** — 自动检测浏览器语言并切换，可手动切换并记忆
 
 ## 📁 项目结构
 
 ```
 fast-clone-web/
 ├── index.html      ← 页面结构
-├── style.css       ← 样式（含主题变量）
-├── script.js       ← 交互逻辑 + 镜像/参数数据
+├── style.css       ← 样式（含主题变量与 i18n）
+├── script.js       ← 交互逻辑 + 镜像/参数数据 + 多语言文案
 └── README.md
 ```
 

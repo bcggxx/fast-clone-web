@@ -174,6 +174,22 @@ code, .mono { font-family: var(--mono); }
 .icon-moon { display: block; }
 [data-theme="light"] .icon-sun { display: block; }
 [data-theme="light"] .icon-moon { display: none; }
+.lang-toggle {
+  height: 38px;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--mono);
+  transition: all 0.2s;
+}
+.lang-toggle:hover { background: var(--bg-hover); color: var(--text); }
+.lang-toggle span { line-height: 1; }
 .nav-burger {
   display: none;
   flex-direction: column;
@@ -291,8 +307,8 @@ code, .mono { font-family: var(--mono); }
   transition: transform 0.18s ease-out;
   will-change: transform;
 }
-/* 跟随光标的玻璃反光，强化「朝向」的立体感 */
-.terminal::after {
+/* 跟随光标的玻璃反光，仅限命令行区域，不溢出到顶部标题栏 */
+.terminal-body::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -306,7 +322,7 @@ code, .mono { font-family: var(--mono); }
   transition: opacity 0.3s;
   z-index: 2;
 }
-.terminal.glare::after { opacity: 1; }
+.terminal.glare .terminal-body::after { opacity: 1; }
 .terminal-bar {
   display: flex;
   align-items: center;
@@ -349,6 +365,7 @@ code, .mono { font-family: var(--mono); }
   font-family: var(--mono);
 }
 .terminal-body {
+  position: relative;
   padding: 18px 20px;
   font-family: var(--mono);
   font-size: 13.5px;
@@ -586,7 +603,7 @@ tbody tr:hover { background: var(--bg-hover); }
   line-height: 1.7;
 }
 .code-block::after {
-  content: "复制";
+  content: var(--copy-label, "复制");
   position: absolute;
   top: 8px; right: 8px;
   padding: 4px 10px;
@@ -602,7 +619,7 @@ tbody tr:hover { background: var(--bg-hover); }
   user-select: none;
 }
 .code-block:hover::after { opacity: 1; }
-.code-block.copied::after { content: "已复制 ✓"; color: var(--green); border-color: var(--green); }
+.code-block.copied::after { content: var(--copied-label, "已复制 ✓"); color: var(--green); border-color: var(--green); }
 
 /* ---------- Tabs ---------- */
 .tabs { margin-bottom: 4px; }

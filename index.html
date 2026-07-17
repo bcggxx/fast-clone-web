@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="fast-clone — 镜像加速 git clone，克隆完成后自动重置 remote 为官方地址。下载快，pull/push 安全，零依赖。" />
+  <meta name="description" id="metaDesc" content="fast-clone — 镜像加速 git clone，克隆完成后自动重置 remote 为官方地址。下载快，pull/push 安全，零依赖。" />
   <meta name="author" content="bcggxx" />
-  <meta property="og:title" content="fast-clone — 镜像加速 git clone" />
-  <meta property="og:description" content="镜像加速克隆 GitHub/GitLab 仓库，克隆完成后自动重置 remote。零依赖，纯 Python 标准库。" />
+  <meta property="og:title" id="metaOgTitle" content="fast-clone — 镜像加速 git clone" />
+  <meta property="og:description" id="metaOgDesc" content="镜像加速克隆 GitHub/GitLab 仓库，克隆完成后自动重置 remote。零依赖，纯 Python 标准库。" />
   <meta property="og:type" content="website" />
-  <title>fast-clone — 镜像加速 git clone</title>
+  <title id="docTitle">fast-clone — 镜像加速 git clone</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="apple-touch-icon" href="favicon.svg" />
@@ -23,14 +23,18 @@
         <span class="nav-logo-text">fast-clone</span>
       </a>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#features">特性</a></li>
-        <li><a href="#mirrors">镜像</a></li>
-        <li><a href="#quickstart">快速开始</a></li>
-        <li><a href="#usage">用法</a></li>
-        <li><a href="#options">参数</a></li>
-        <li><a href="#license">许可证</a></li>
+        <li><a href="#features" data-i18n="nav.features">特性</a></li>
+        <li><a href="#mirrors" data-i18n="nav.mirrors">镜像</a></li>
+        <li><a href="#quickstart" data-i18n="nav.quickstart">快速开始</a></li>
+        <li><a href="#usage" data-i18n="nav.usage">用法</a></li>
+        <li><a href="#options" data-i18n="nav.options">参数</a></li>
+        <li><a href="#license" data-i18n="nav.license">许可证</a></li>
       </ul>
       <div class="nav-actions">
+        <button class="lang-toggle" id="langToggle" aria-label="切换语言" title="切换语言">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+          <span id="langLabel">EN</span>
+        </button>
         <button class="theme-toggle" id="themeToggle" aria-label="切换主题" title="切换主题">
           <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 7a5 5 0 100 10 5 5 0 000-10zm0-5a1 1 0 011 1v2a1 1 0 01-2 0V3a1 1 0 011-1zm0 17a1 1 0 011 1v2a1 1 0 01-2 0v-2a1 1 0 011-1zM4.22 4.22a1 1 0 011.42 0l1.4 1.41a1 1 0 11-1.41 1.42L4.22 5.64a1 1 0 010-1.42zm12.73 12.73a1 1 0 011.41 0l1.42 1.41a1 1 0 01-1.42 1.42l-1.41-1.42a1 1 0 010-1.41zM2 12a1 1 0 011-1h2a1 1 0 010 2H3a1 1 0 01-1-1zm17 0a1 1 0 011-1h2a1 1 0 010 2h-2a1 1 0 01-1-1zM4.22 19.78a1 1 0 010-1.42l1.41-1.41a1 1 0 111.42 1.41l-1.42 1.42a1 1 0 01-1.41 0zm12.73-12.73a1 1 0 010-1.42l1.41-1.41a1 1 0 111.42 1.41l-1.42 1.42a1 1 0 01-1.41 0z"/></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
@@ -55,13 +59,13 @@
       <div class="hero-content">
         <div class="hero-badge">
           <span class="dot"></span>
-          纯 vibe coding · 全程 AI 辅助生成
+          <span data-i18n="hero.badge">纯 vibe coding · 全程 AI 辅助生成</span>
         </div>
         <h1 class="hero-title">
-          镜像加速 <span class="mono">git clone</span><br />
-          <span class="gradient-text">下载快，push 安全</span>
+          <span data-i18n="hero.title1">镜像加速 git clone</span><br />
+          <span class="gradient-text" data-i18n="hero.title2">下载快，push 安全</span>
         </h1>
-        <p class="hero-desc">
+        <p class="hero-desc" data-i18n-html="hero.desc">
           从镜像站下载（快），克隆完成后<strong>自动重置 remote 为官方地址</strong>，
           后续 <code>pull</code> / <code>push</code> 走官方仓库（安全）。
           零外部依赖，仅用 Python 标准库。
@@ -69,18 +73,18 @@
         <div class="hero-cta">
           <a class="btn btn-primary" href="#quickstart">
             <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
-            快速开始
+            <span data-i18n="hero.cta1">快速开始</span>
           </a>
           <a class="btn btn-ghost" href="https://github.com/bcggxx/fast-clone" target="_blank" rel="noopener">
             <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-            查看源码
+            <span data-i18n="hero.cta2">查看源码</span>
           </a>
         </div>
         <div class="hero-stats">
-          <div class="stat"><span class="stat-num">11</span><span class="stat-label">内置镜像</span></div>
-          <div class="stat"><span class="stat-num">0</span><span class="stat-label">外部依赖</span></div>
-          <div class="stat"><span class="stat-num">3.7+</span><span class="stat-label">Python 版本</span></div>
-          <div class="stat"><span class="stat-num">2</span><span class="stat-label">语言支持</span></div>
+          <div class="stat"><span class="stat-num">11</span><span class="stat-label" data-i18n="hero.stat1">内置镜像</span></div>
+          <div class="stat"><span class="stat-num">0</span><span class="stat-label" data-i18n="hero.stat2">外部依赖</span></div>
+          <div class="stat"><span class="stat-num">3.7+</span><span class="stat-label" data-i18n="hero.stat3">Python 版本</span></div>
+          <div class="stat"><span class="stat-num">2</span><span class="stat-label" data-i18n="hero.stat4">语言支持</span></div>
         </div>
       </div>
       <div class="hero-terminal">
@@ -91,22 +95,7 @@
             <span class="term-dot dot-green"></span>
             <span class="term-title">fast-clone</span>
           </div>
-          <div class="terminal-body" id="terminalBody">
-            <div class="term-line"><span class="prompt">$</span> <span class="cmd">fast-clone --fastest https://github.com/user/repo</span></div>
-            <div class="term-line term-muted">  -> 检测网络: IPv4 ✓  IPv6 ✓</div>
-            <div class="term-line term-muted">  -> 测速 11 个镜像...</div>
-            <div class="term-line"><span class="term-green">  github-akams      33ms</span></div>
-            <div class="term-line">  kkgithub          48ms</div>
-            <div class="term-line">  gh-proxy-v4       43ms</div>
-            <div class="term-line term-muted">  ...</div>
-            <div class="term-line term-cyan">  -> 选定: github.akams.cn</div>
-            <div class="term-line"><span class="prompt">$</span> git clone --progress https://github.akams.cn/https://github.com/user/repo.git</div>
-            <div class="term-line term-muted">  remote: Enumerating objects: 1248, done.</div>
-            <div class="term-line term-muted">  接收对象中 48.2 MiB  @ 12.4 MiB/s</div>
-            <div class="term-line"><span class="term-green">  OK 克隆成功: github.akams.cn</span></div>
-            <div class="term-line"><span class="term-green">  OK remote 'origin' -> https://github.com/user/repo.git</span></div>
-            <div class="term-line cursor"><span class="prompt">$</span> <span class="cursor-block"></span></div>
-          </div>
+          <div class="terminal-body" id="terminalBody"></div>
         </div>
       </div>
     </div>
@@ -116,13 +105,13 @@
   <!-- 核心价值条 -->
   <section class="value-bar">
     <div class="container value-bar-inner">
-      <div class="value-item"><span class="value-icon">🔒</span><span>下载快</span></div>
+      <div class="value-item"><span class="value-icon">🔒</span><span data-i18n="value.1">下载快</span></div>
       <div class="value-arrow">→</div>
-      <div class="value-item"><span class="value-icon">⚡</span><span>镜像加速</span></div>
+      <div class="value-item"><span class="value-icon">⚡</span><span data-i18n="value.2">镜像加速</span></div>
       <div class="value-arrow">→</div>
-      <div class="value-item"><span class="value-icon">🔄</span><span>自动重置 remote</span></div>
+      <div class="value-item"><span class="value-icon">🔄</span><span data-i18n="value.3">自动重置 remote</span></div>
       <div class="value-arrow">→</div>
-      <div class="value-item"><span class="value-icon">🛡️</span><span>pull / push 安全</span></div>
+      <div class="value-item"><span class="value-icon">🛡️</span><span data-i18n="value.4">pull / push 安全</span></div>
     </div>
   </section>
 
@@ -130,9 +119,9 @@
   <section class="section" id="features">
     <div class="container">
       <div class="section-head">
-        <span class="section-tag">为什么选择我们</span>
-        <h2 class="section-title">十一个理由，值得拥有</h2>
-        <p class="section-sub">安全、零依赖、智能保护，专为加速而设计。</p>
+        <span class="section-tag" data-i18n="features.tag">为什么选择我们</span>
+        <h2 class="section-title" data-i18n="features.title">十一个理由，值得拥有</h2>
+        <p class="section-sub" data-i18n="features.sub">安全、零依赖、智能保护，专为加速而设计。</p>
       </div>
       <div class="features-grid" id="featuresGrid"></div>
     </div>
@@ -142,26 +131,26 @@
   <section class="section section-alt" id="mirrors">
     <div class="container">
       <div class="section-head">
-        <span class="section-tag">可用镜像</span>
-        <h2 class="section-title">11 个内置镜像站</h2>
-        <p class="section-sub">覆盖前缀代理 / 域名替换 / 路径前缀等多种策略，自动检测 IPv4/IPv6。</p>
+        <span class="section-tag" data-i18n="mirrors.tag">可用镜像</span>
+        <h2 class="section-title" data-i18n="mirrors.title">11 个内置镜像站</h2>
+        <p class="section-sub" data-i18n="mirrors.sub">覆盖前缀代理 / 域名替换 / 路径前缀等多种策略，自动检测 IPv4/IPv6。</p>
       </div>
       <div class="table-wrap">
         <table class="mirror-table" id="mirrorTable">
           <thead>
             <tr>
-              <th>key</th>
-              <th>镜像站</th>
-              <th>类型</th>
-              <th>延迟</th>
-              <th>IP</th>
-              <th>说明</th>
+              <th data-i18n="mirrors.th.key">key</th>
+              <th data-i18n="mirrors.th.mirror">镜像站</th>
+              <th data-i18n="mirrors.th.type">类型</th>
+              <th data-i18n="mirrors.th.latency">延迟</th>
+              <th data-i18n="mirrors.th.ip">IP</th>
+              <th data-i18n="mirrors.th.desc">说明</th>
             </tr>
           </thead>
           <tbody id="mirrorBody"></tbody>
         </table>
       </div>
-      <p class="table-note">延迟为 2026-07-14 Windows TCP 443 端口实测，3 次测试取均值。带 <span class="default-tag">默认</span> 标记为当前默认镜像。</p>
+      <p class="table-note" data-i18n-html="mirrors.note">延迟为 2026-07-14 Windows TCP 443 端口实测，3 次测试取均值。带 <span class="default-tag">默认</span> 标记为当前默认镜像。</p>
     </div>
   </section>
 
@@ -169,24 +158,24 @@
   <section class="section" id="quickstart">
     <div class="container">
       <div class="section-head">
-        <span class="section-tag">快速开始</span>
-        <h2 class="section-title">三步上手</h2>
-        <p class="section-sub">克隆仓库 → 运行安装脚本 → 任意终端使用 <code>fast-clone</code>。</p>
+        <span class="section-tag" data-i18n="quickstart.tag">快速开始</span>
+        <h2 class="section-title" data-i18n="quickstart.title">三步上手</h2>
+        <p class="section-sub" data-i18n-html="quickstart.sub">克隆仓库 → 运行安装脚本 → 任意终端使用 <code>fast-clone</code>。</p>
       </div>
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
-          <h3>获取工具</h3>
-          <p>仓库保存在本地固定位置，安装后不要移动目录。</p>
+          <h3 data-i18n="quickstart.s1.title">获取工具</h3>
+          <p data-i18n="quickstart.s1.desc">仓库保存在本地固定位置，安装后不要移动目录。</p>
           <div class="code-block" data-copy="git clone https://github.com/bcggxx/fast-clone.git"></div>
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <h3>安装</h3>
+          <h3 data-i18n="quickstart.s2.title">安装</h3>
           <div class="tabs" data-tabs>
             <div class="tab-head">
-              <button class="tab-btn active" data-tab="win">Windows</button>
-              <button class="tab-btn" data-tab="linux">Linux</button>
+              <button class="tab-btn active" data-tab="win" data-i18n="quickstart.s2.win">Windows</button>
+              <button class="tab-btn" data-tab="linux" data-i18n="quickstart.s2.linux">Linux</button>
             </div>
             <div class="tab-pane active" data-pane="win">
               <div class="code-block" data-copy="cd fast-clone\windows&#10;setup.bat"></div>
@@ -195,12 +184,12 @@
               <div class="code-block" data-copy="cd fast-clone/linux&#10;bash setup.sh"></div>
             </div>
           </div>
-          <p class="step-note">前置依赖：Python 3.7+ 与 Git。</p>
+          <p class="step-note" data-i18n="quickstart.s2.note">前置依赖：Python 3.7+ 与 Git。</p>
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>开始使用</h3>
-          <p>安装后任意终端可用 <code>fast-clone</code> 命令。</p>
+          <h3 data-i18n="quickstart.s3.title">开始使用</h3>
+          <p data-i18n="quickstart.s3.desc">安装后任意终端可用 <code>fast-clone</code> 命令。</p>
           <div class="code-block" data-copy="fast-clone --fastest https://github.com/user/repo"></div>
         </div>
       </div>
@@ -211,60 +200,11 @@
   <section class="section section-alt" id="usage">
     <div class="container">
       <div class="section-head">
-        <span class="section-tag">用法示例</span>
-        <h2 class="section-title">常用命令</h2>
-        <p class="section-sub">不确定哪个镜像最快？加 <code>--fastest</code> 自动测速。</p>
+        <span class="section-tag" data-i18n="usage.tag">用法示例</span>
+        <h2 class="section-title" data-i18n="usage.title">常用命令</h2>
+        <p class="section-sub" data-i18n-html="usage.sub">不确定哪个镜像最快？加 <code>--fastest</code> 自动测速。</p>
       </div>
-      <div class="usage-grid">
-        <div class="usage-card">
-          <div class="usage-card-head">
-            <span class="usage-tag">默认</span>
-            <h4>默认镜像克隆</h4>
-          </div>
-          <p>使用 <code>gh-proxy.org</code> 前缀代理镜像。</p>
-          <div class="code-block" data-copy="fast-clone https://github.com/user/repo"></div>
-        </div>
-        <div class="usage-card">
-          <div class="usage-card-head">
-            <span class="usage-tag tag-accent">推荐</span>
-            <h4>自动测速选最快</h4>
-          </div>
-          <p>实时 TCP 测速，选延迟最低的镜像。</p>
-          <div class="code-block" data-copy="fast-clone --fastest https://github.com/user/repo"></div>
-        </div>
-        <div class="usage-card">
-          <div class="usage-card-head">
-            <span class="usage-tag">指定</span>
-            <h4>指定镜像</h4>
-          </div>
-          <p>用 <code>--mirror</code> 显式指定镜像 key。</p>
-          <div class="code-block" data-copy="fast-clone --mirror github-akams https://github.com/user/repo"></div>
-        </div>
-        <div class="usage-card">
-          <div class="usage-card-head">
-            <span class="usage-tag">预览</span>
-            <h4>预览不克隆</h4>
-          </div>
-          <p>用 <code>-n</code> 只看 URL 转换结果。</p>
-          <div class="code-block" data-copy="fast-clone -n https://github.com/user/repo"></div>
-        </div>
-        <div class="usage-card">
-          <div class="usage-card-head">
-            <span class="usage-tag">浅克隆</span>
-            <h4>指定分支与深度</h4>
-          </div>
-          <p>配合 <code>-b</code> / <code>-d</code> 做浅克隆。</p>
-          <div class="code-block" data-copy="fast-clone -b main --depth 1 https://github.com/user/repo"></div>
-        </div>
-        <div class="usage-card">
-          <div class="usage-card-head">
-            <span class="usage-tag">列表</span>
-            <h4>列出全部镜像</h4>
-          </div>
-          <p>用 <code>-l</code> 查看所有可用镜像详情。</p>
-          <div class="code-block" data-copy="fast-clone -l"></div>
-        </div>
-      </div>
+      <div class="usage-grid" id="usageGrid"></div>
     </div>
   </section>
 
@@ -272,27 +212,11 @@
   <section class="section" id="protection">
     <div class="container">
       <div class="section-head">
-        <span class="section-tag">自动保护</span>
-        <h2 class="section-title">克隆失败概率极低</h2>
-        <p class="section-sub">速度监控 + 自动重试 + 兜底直连，三重保障。</p>
+        <span class="section-tag" data-i18n="protection.tag">自动保护</span>
+        <h2 class="section-title" data-i18n="protection.title">克隆失败概率极低</h2>
+        <p class="section-sub" data-i18n="protection.sub">速度监控 + 自动重试 + 兜底直连，三重保障。</p>
       </div>
-      <div class="protect-grid">
-        <div class="protect-card">
-          <div class="protect-icon">📊</div>
-          <h4>速度监控</h4>
-          <p>持续低于 <strong>1 MB/s</strong> 达 3 分钟 → 自动中止、清残留、换镜像。</p>
-        </div>
-        <div class="protect-card">
-          <div class="protect-icon">🔁</div>
-          <h4>连接重试</h4>
-          <p>每个镜像连接失败自动重试 <strong>3 次</strong>，仍失败则换下一个镜像。</p>
-        </div>
-        <div class="protect-card">
-          <div class="protect-icon">🎯</div>
-          <h4>兜底直连</h4>
-          <p>全部镜像失败后，最后尝试官方仓库直连，确保克隆能完成。</p>
-        </div>
-      </div>
+      <div class="protect-grid" id="protectGrid"></div>
     </div>
   </section>
 
@@ -300,14 +224,18 @@
   <section class="section section-alt" id="options">
     <div class="container">
       <div class="section-head">
-        <span class="section-tag">完整参数</span>
-        <h2 class="section-title">命令行选项</h2>
-        <p class="section-sub">所有可用参数一览。</p>
+        <span class="section-tag" data-i18n="options.tag">完整参数</span>
+        <h2 class="section-title" data-i18n="options.title">命令行选项</h2>
+        <p class="section-sub" data-i18n="options.sub">所有可用参数一览。</p>
       </div>
       <div class="table-wrap">
         <table class="options-table" id="optionsTable">
           <thead>
-            <tr><th>参数</th><th>简写</th><th>说明</th></tr>
+            <tr>
+              <th data-i18n="options.th.param">参数</th>
+              <th data-i18n="options.th.short">简写</th>
+              <th data-i18n="options.th.desc">说明</th>
+            </tr>
           </thead>
           <tbody id="optionsBody"></tbody>
         </table>
@@ -319,23 +247,19 @@
   <section class="section section-alt" id="license">
     <div class="container">
       <div class="section-head">
-        <span class="section-tag">许可证</span>
-        <h2 class="section-title">MIT 开源许可</h2>
-        <p class="section-sub">fast-clone 及其官方展示站（本网站）均基于 MIT 许可证发布，可自由使用、修改、分发。</p>
+        <span class="section-tag" data-i18n="license.tag">许可证</span>
+        <h2 class="section-title" data-i18n="license.title">MIT 开源许可</h2>
+        <p class="section-sub" data-i18n="license.sub">fast-clone 及其官方展示站（本网站）均基于 MIT 许可证发布，可自由使用、修改、分发。</p>
       </div>
       <div class="license-box">
         <div class="license-head">
           <span class="license-badge">MIT</span>
           <span class="license-copy">Copyright (c) 2026 bcggxx</span>
         </div>
-        <ul class="license-list">
-          <li><strong>核心权利</strong>：可自由使用、复制、修改、合并、发布、分发、再授权和/或出售本软件副本，包括个人与商业用途。</li>
-          <li><strong>唯一条件</strong>：在软件的所有副本或实质部分中，必须包含上述版权声明与本许可声明。</li>
-          <li><strong>免责声明</strong>：本软件按「原样」提供，不附带任何明示或暗示的担保，作者或版权持有人对任何索赔、损害或其他责任概不负责。</li>
-        </ul>
+        <ul class="license-list" id="licenseList"></ul>
         <a class="btn btn-ghost btn-sm license-link" href="https://github.com/bcggxx/fast-clone/blob/master/LICENSE" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
-          查看完整许可证文本
+          <span data-i18n="license.link">查看完整许可证文本</span>
         </a>
       </div>
     </div>
@@ -344,14 +268,14 @@
   <!-- CTA -->
   <section class="cta-section">
     <div class="container cta-inner">
-      <h2 class="cta-title">现在就开始加速你的 clone</h2>
-      <p class="cta-desc">零依赖、纯 Python 标准库，克隆即用。</p>
+      <h2 class="cta-title" data-i18n="cta.title">现在就开始加速你的 clone</h2>
+      <p class="cta-desc" data-i18n="cta.desc">零依赖、纯 Python 标准库，克隆即用。</p>
       <div class="cta-buttons">
         <a class="btn btn-primary btn-lg" href="https://github.com/bcggxx/fast-clone" target="_blank" rel="noopener">
           <svg viewBox="0 0 16 16" width="18" height="18"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          前往 GitHub
+          <span data-i18n="cta.btn1">前往 GitHub</span>
         </a>
-        <a class="btn btn-ghost btn-lg" href="#quickstart">查看安装教程</a>
+        <a class="btn btn-ghost btn-lg" href="#quickstart" data-i18n="cta.btn2">查看安装教程</a>
       </div>
     </div>
   </section>
@@ -363,17 +287,17 @@
         <span class="nav-logo-icon"><img src="favicon.svg" alt="fast-clone" /></span>
         <span>fast-clone</span>
       </div>
-      <p class="footer-desc">镜像加速 git clone，克隆完成后自动重置 remote 为官方地址。</p>
+      <p class="footer-desc" data-i18n="footer.desc">镜像加速 git clone，克隆完成后自动重置 remote 为官方地址。</p>
       <div class="footer-links">
         <a href="https://github.com/bcggxx/fast-clone" target="_blank" rel="noopener">GitHub</a>
-        <a href="#features">特性</a>
-        <a href="#mirrors">镜像</a>
-        <a href="#quickstart">安装</a>
-        <a href="https://github.com/bcggxx/fast-clone/blob/master/README.md" target="_blank" rel="noopener">文档</a>
+        <a href="#features" data-i18n="nav.features">特性</a>
+        <a href="#mirrors" data-i18n="nav.mirrors">镜像</a>
+        <a href="#quickstart" data-i18n="quickstart.install">安装</a>
+        <a href="https://github.com/bcggxx/fast-clone/blob/master/README.md" target="_blank" rel="noopener" data-i18n="footer.docs">文档</a>
       </div>
       <div class="footer-bottom">
         <span>MIT License · © 2026 bcggxx</span>
-        <span class="footer-vibe">Pure vibe coding ✨</span>
+        <span class="footer-vibe" data-i18n="footer.vibe">Pure vibe coding ✨</span>
       </div>
     </div>
   </footer>
