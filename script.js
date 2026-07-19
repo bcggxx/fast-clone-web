@@ -16,8 +16,8 @@
       'themeTitle': '切换主题',
       'langTitle': '切换语言',
       'hero.badge': '纯 vibe coding · 全程 AI 辅助生成',
-      'hero.title1': '镜像加速 git clone',
-      'hero.title2': '下载快，push 安全',
+      'hero.title1': '你的下一次克隆',
+      'hero.title2': '何必等待那么久',
       'hero.desc': '从镜像站下载（快），克隆完成后<strong>自动重置 remote 为官方地址</strong>，后续 <code>pull</code> / <code>push</code> 走官方仓库（安全）。零外部依赖，仅用 Python 标准库。',
       'hero.cta1': '快速开始',
       'hero.cta2': '查看源码',
@@ -42,7 +42,7 @@
       'mirrors.th.ip': 'IP',
       'mirrors.th.desc': '说明',
       'mirrors.default': '默认',
-      'mirrors.note': '延迟为 2026-07-14 Windows TCP 443 端口实测，3 次测试取均值。带 <span class="default-tag">默认</span> 标记为当前默认镜像。',
+      'mirrors.note': '延迟数据来自 <a href="https://github.com/bcggxx/fast-clone/releases/tag/mirror-status" target="_blank" rel="noopener">GitHub Actions 每日 Release 报告</a>（每日 UTC 08:00 自动 TCP 443 测试，固定 tag <code>mirror-status</code> 每日覆盖更新）。带 <span class="default-tag">默认</span> 标记为当前默认镜像，<span class="latency-badge latency-na">—</span> 表示当日测试跳过或不可达。',
       'quickstart.tag': '快速开始',
       'quickstart.title': '三步上手',
       'quickstart.sub': '克隆仓库 → 运行安装脚本 → 任意终端使用 <code>fast-clone</code>。',
@@ -97,8 +97,8 @@
       'themeTitle': 'Toggle theme',
       'langTitle': 'Switch language',
       'hero.badge': 'Pure vibe coding · fully AI-assisted',
-      'hero.title1': 'Mirror-accelerated git clone',
-      'hero.title2': 'Fast download, safe push',
+      'hero.title1': 'Your next clone',
+      'hero.title2': 'why wait so long',
       'hero.desc': 'Download from a mirror (fast); after cloning, <strong>remote is reset to the official URL</strong> automatically so later <code>pull</code> / <code>push</code> go to the official repo (safe). Zero external dependencies — Python stdlib only.',
       'hero.cta1': 'Get Started',
       'hero.cta2': 'View Source',
@@ -123,7 +123,7 @@
       'mirrors.th.ip': 'IP',
       'mirrors.th.desc': 'Notes',
       'mirrors.default': 'Default',
-      'mirrors.note': 'Latency measured on 2026-07-14 over Windows TCP port 443, averaged over 3 runs. Rows tagged <span class="default-tag">Default</span> mark the current default mirror.',
+      'mirrors.note': 'Latency data is sourced from the <a href="https://github.com/bcggxx/fast-clone/releases/tag/mirror-status" target="_blank" rel="noopener">GitHub Actions daily Release report</a> (auto TCP 443 test at UTC 08:00 daily; fixed tag <code>mirror-status</code> overwritten daily). Rows tagged <span class="default-tag">Default</span> mark the current default mirror; <span class="latency-badge latency-na">—</span> indicates the mirror was skipped or unreachable in the latest test.',
       'quickstart.tag': 'Quick Start',
       'quickstart.title': 'Three steps to go',
       'quickstart.sub': 'Clone the repo → run the installer → use <code>fast-clone</code> in any terminal.',
@@ -299,6 +299,70 @@
     return 'latency-slow';
   }
 
+  /* ---------- 镜像状态（GitHub Release） ---------- */
+  var MIRROR_STATUS_API = 'https://api.github.com/repos/bcggxx/fast-clone/releases/tags/mirror-status';
+  var MIRROR_STATUS_CACHE_KEY = 'fc-mirror-status';
+  var MIRROR_STATUS_CACHE_TTL = 60 * 60 * 1000;
+
+  function parseMirrorStatusBody(body) {
+    var result = { updated: '', items: {} };
+    if (!body) return result;
+    var headerMatch = body.match(/—\s*([\d\-]+\s+[\d:]+\s+UTC)/);
+    if (headerMatch) result.updated = headerMatch[1];
+    var lines = body.split(/\r?\n/);
+    lines.forEach(function (line) {
+      var trimmed = line.trim();
+      if (trimmed.charAt(0) !== '|') return;
+      var cells = trimmed.split('|');
+      if (cells.length < 6) return;
+      var keyCell = cells[1].trim();
+      var keyMatch = keyCell.match(/^`([^`]+)`$/);
+      if (!keyMatch) return;
+      var key = keyMatch[1];
+      var latencyStr = cells[4].trim();
+      var statusStr = cells[5].trim();
+      var ms = null;
+      var mm = latencyStr.match(/([\d.]+)\s*ms/i);
+      if (mm) ms = parseFloat(mm[1]);
+      result.items[key] = { latency: ms, status: statusStr };
+    });
+    return result;
+  }
+
+  function fetchMirrorStatus(cb) {
+    try {
+      var raw = localStorage.getItem(MIRROR_STATUS_CACHE_KEY);
+      if (raw) {
+        var cached = JSON.parse(raw);
+        if (cached && cached.ts && (Date.now() - cached.ts < MIRROR_STATUS_CACHE_TTL) && cached.data) {
+          cb(null, cached.data);
+          return;
+        }
+      }
+    } catch (e) {}
+    fetch(MIRROR_STATUS_API, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+      .then(function (rel) {
+        var data = parseMirrorStatusBody(rel.body || '');
+        try {
+          localStorage.setItem(MIRROR_STATUS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
+        } catch (e) {}
+        cb(null, data);
+      })
+      .catch(function (err) { cb(err); });
+  }
+
+  function renderLatency(mirror, statusData) {
+    if (!statusData) {
+      return '<span class="latency-badge ' + latencyClass(mirror.latency) + '">' + mirror.latency + 'ms</span>';
+    }
+    var item = statusData.items[mirror.key];
+    if (!item || item.latency === null) {
+      return '<span class="latency-badge latency-na">—</span>';
+    }
+    return '<span class="latency-badge ' + latencyClass(item.latency) + '">' + Math.round(item.latency) + 'ms</span>';
+  }
+
   /* ---------- 语言检测 ---------- */
   function detectLang() {
     var saved = null;
@@ -354,14 +418,14 @@
   }
 
   /* ---------- 渲染镜像表 ---------- */
-  function renderMirrors() {
+  function renderMirrors(statusData) {
     var html = MIRRORS.map(function (m) {
       var defTag = m.def ? '<span class="default-tag">' + T('mirrors.default') + '</span>' : '';
       return '<tr>' +
         '<td>' + escapeHtml(m.key) + defTag + '</td>' +
         '<td>' + escapeHtml(m.name) + '</td>' +
         '<td>' + escapeHtml(m.type[LANG]) + '</td>' +
-        '<td><span class="latency-badge ' + latencyClass(m.latency) + '">' + m.latency + 'ms</span></td>' +
+        '<td>' + renderLatency(m, statusData) + '</td>' +
         '<td><span class="ip-badge">' + IP_LABELS[m.ip][LANG] + '</span></td>' +
         '<td>' + escapeHtml(m.desc[LANG]) + '</td>' +
         '</tr>';
