@@ -42,6 +42,7 @@
       'mirrors.th.ip': 'IP',
       'mirrors.th.desc': '说明',
       'mirrors.default': '默认',
+      'mirrors.caption': '内置镜像站列表',
       'mirrors.note': '延迟数据来自 <a href="https://github.com/bcggxx/fast-clone/releases/tag/mirror-status" target="_blank" rel="noopener">GitHub Actions 每日 Release 报告</a>（每日 UTC 08:00 自动 TCP 443 测试，固定 tag <code>mirror-status</code> 每日覆盖更新）。带 <span class="default-tag">默认</span> 标记为当前默认镜像，<span class="latency-badge latency-na">—</span> 表示当日测试跳过或不可达。',
       'quickstart.tag': '快速开始',
       'quickstart.title': '三步上手',
@@ -67,6 +68,7 @@
       'options.th.param': '参数',
       'options.th.short': '简写',
       'options.th.desc': '说明',
+      'options.caption': '命令行选项列表',
       'license.tag': '许可证',
       'license.title': 'MIT 开源许可',
       'license.sub': 'fast-clone 及其官方展示站（本网站）均基于 MIT 许可证发布，可自由使用、修改、分发。',
@@ -123,6 +125,7 @@
       'mirrors.th.ip': 'IP',
       'mirrors.th.desc': 'Notes',
       'mirrors.default': 'Default',
+      'mirrors.caption': 'Built-in mirror sites',
       'mirrors.note': 'Latency data is sourced from the <a href="https://github.com/bcggxx/fast-clone/releases/tag/mirror-status" target="_blank" rel="noopener">GitHub Actions daily Release report</a> (auto TCP 443 test at UTC 08:00 daily; fixed tag <code>mirror-status</code> overwritten daily). Rows tagged <span class="default-tag">Default</span> mark the current default mirror; <span class="latency-badge latency-na">—</span> indicates the mirror was skipped or unreachable in the latest test.',
       'quickstart.tag': 'Quick Start',
       'quickstart.title': 'Three steps to go',
@@ -148,6 +151,7 @@
       'options.th.param': 'Option',
       'options.th.short': 'Alias',
       'options.th.desc': 'Description',
+      'options.caption': 'Command-line options',
       'license.tag': 'License',
       'license.title': 'MIT open-source license',
       'license.sub': 'Both fast-clone and its official showcase site (this website) are released under the MIT License — free to use, modify, and distribute.',
@@ -395,6 +399,8 @@
     if (themeToggle) { themeToggle.title = T('themeTitle'); themeToggle.setAttribute('aria-label', T('themeTitle')); }
     var langToggle = $('#langToggle');
     if (langToggle) { langToggle.title = T('langTitle'); langToggle.setAttribute('aria-label', T('langTitle')); }
+    var metaOgLocale = $('#metaOgLocale');
+    if (metaOgLocale) metaOgLocale.setAttribute('content', LANG === 'zh' ? 'zh_CN' : 'en_US');
   }
 
   /* ---------- 应用语言（CSS 文案变量：复制提示等） ---------- */
@@ -409,8 +415,8 @@
     var html = FEATURES.map(function (f) {
       var d = f[LANG];
       return '<div class="feature-card">' +
-        '<div class="feature-icon">' + f.icon + '</div>' +
-        '<h3>' + d.title + '</h3>' +
+        '<div class="feature-icon">' + escapeHtml(f.icon) + '</div>' +
+        '<h3>' + escapeHtml(d.title) + '</h3>' +
         '<p>' + d.desc + '</p>' +
         '</div>';
     }).join('');
@@ -447,8 +453,8 @@
     var html = USAGE.map(function (u) {
       return '<div class="usage-card">' +
         '<div class="usage-card-head">' +
-        '<span class="usage-tag ' + u.cls + '">' + u.tag[LANG] + '</span>' +
-        '<h4>' + u.title[LANG] + '</h4>' +
+        '<span class="usage-tag ' + u.cls + '">' + escapeHtml(u.tag[LANG]) + '</span>' +
+        '<h4>' + escapeHtml(u.title[LANG]) + '</h4>' +
         '</div>' +
         '<p>' + u.desc[LANG] + '</p>' +
         '<div class="code-block" data-copy="' + escapeHtml(u.cmd) + '"></div>' +
@@ -464,8 +470,8 @@
     var html = PROTECTION.map(function (p) {
       var d = p[LANG];
       return '<div class="protect-card">' +
-        '<div class="protect-icon">' + p.icon + '</div>' +
-        '<h3>' + d.title + '</h3>' +
+        '<div class="protect-icon">' + escapeHtml(p.icon) + '</div>' +
+        '<h3>' + escapeHtml(d.title) + '</h3>' +
         '<p>' + d.desc + '</p>' +
         '</div>';
     }).join('');
@@ -561,7 +567,7 @@
   function initTheme() {
     var saved = null;
     try { saved = localStorage.getItem('fc-theme'); } catch (e) {}
-    if (saved) {
+    if (saved === 'dark' || saved === 'light') {
       document.documentElement.setAttribute('data-theme', saved);
     } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
       document.documentElement.setAttribute('data-theme', 'light');
@@ -645,9 +651,15 @@
     onScroll();
 
     if (burger) {
-      burger.addEventListener('click', function () { links.classList.toggle('open'); });
+      burger.addEventListener('click', function () {
+        var isOpen = links.classList.toggle('open');
+        burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
       $all('a', links).forEach(function (a) {
-        a.addEventListener('click', function () { links.classList.remove('open'); });
+        a.addEventListener('click', function () {
+          links.classList.remove('open');
+          burger.setAttribute('aria-expanded', 'false');
+        });
       });
     }
 
@@ -678,11 +690,17 @@
       if (toastTimer) clearTimeout(toastTimer);
       toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 1800);
     }
+    function onCopySuccess(block) {
+      if (block) {
+        block.classList.add('copied');
+        setTimeout(function () { block.classList.remove('copied'); }, 1500);
+      }
+      showToast(T('toast.copy'));
+    }
     function copyText(text, block) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function () {
-          if (block) { block.classList.add('copied'); setTimeout(function () { block.classList.remove('copied'); }, 1500); }
-          showToast(T('toast.copy'));
+          onCopySuccess(block);
         }).catch(function () { fallbackCopy(text, block); });
       } else {
         fallbackCopy(text, block);
@@ -694,8 +712,7 @@
       document.body.appendChild(ta); ta.select();
       try {
         document.execCommand('copy');
-        if (block) { block.classList.add('copied'); setTimeout(function () { block.classList.remove('copied'); }, 1500); }
-        showToast(T('toast.copy'));
+        onCopySuccess(block);
       } catch (e) {
         showToast(T('toast.fail'));
       }
@@ -709,15 +726,40 @@
     $all('[data-tabs]').forEach(function (root) {
       var btns = $all('.tab-btn', root);
       var panes = $all('.tab-pane', root);
-      btns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var target = btn.getAttribute('data-tab');
-          btns.forEach(function (b) { b.classList.remove('active'); });
-          panes.forEach(function (p) { p.classList.remove('active'); });
-          btn.classList.add('active');
-          $all('.tab-pane[data-pane="' + target + '"]', root).forEach(function (p) {
-            p.classList.add('active');
-          });
+
+      function activate(btn) {
+        var target = btn.getAttribute('data-tab');
+        btns.forEach(function (b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+          b.setAttribute('tabindex', '-1');
+        });
+        panes.forEach(function (p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        btn.setAttribute('tabindex', '0');
+        $all('.tab-pane[data-pane="' + target + '"]', root).forEach(function (p) {
+          p.classList.add('active');
+        });
+      }
+
+      btns.forEach(function (btn, idx) {
+        btn.addEventListener('click', function () { activate(btn); });
+        btn.addEventListener('keydown', function (e) {
+          var newIdx = null;
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            newIdx = (idx - 1 + btns.length) % btns.length;
+          } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            newIdx = (idx + 1) % btns.length;
+          } else if (e.key === 'Home') {
+            newIdx = 0;
+          } else if (e.key === 'End') {
+            newIdx = btns.length - 1;
+          }
+          if (newIdx === null) return;
+          e.preventDefault();
+          btns[newIdx].focus();
+          activate(btns[newIdx]);
         });
       });
     });
