@@ -573,8 +573,8 @@
         var next = cur === 'dark' ? 'light' : 'dark';
 
         var rect = toggle.getBoundingClientRect();
-        var x = event.clientX || (rect.left + rect.width / 2);
-        var y = event.clientY || (rect.top + rect.height / 2);
+        var x = event.clientX != null ? event.clientX : (rect.left + rect.width / 2);
+        var y = event.clientY != null ? event.clientY : (rect.top + rect.height / 2);
         var endRadius = Math.hypot(
           Math.max(x, window.innerWidth - x),
           Math.max(y, window.innerHeight - y)
@@ -583,6 +583,7 @@
           window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (document.startViewTransition && !reduceMotion) {
+          document.body.style.transition = 'none';
           var transition = document.startViewTransition(function () { applyTheme(next); });
           transition.ready.then(function () {
             document.documentElement.animate(
@@ -599,6 +600,7 @@
               }
             );
           }).catch(function () { applyTheme(next); });
+          setTimeout(function () { document.body.style.transition = ''; }, 600);
         } else if (!reduceMotion) {
           var bg = next === 'dark' ? '#0d1117' : '#ffffff';
           var overlay = document.createElement('div');
@@ -613,8 +615,10 @@
           document.body.appendChild(overlay);
           void overlay.offsetWidth;
           overlay.classList.add('run');
+          document.body.style.transition = 'none';
           applyTheme(next);
           setTimeout(function () {
+            document.body.style.transition = '';
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
           }, 520);
         } else {
@@ -755,8 +759,6 @@
     function onLeave() {
       term.style.setProperty('--term-ry', DEFAULT_RY + 'deg');
       term.style.setProperty('--term-rx', DEFAULT_RX + 'deg');
-      term.style.setProperty('--term-gx', '50%');
-      term.style.setProperty('--term-gy', '0%');
       term.classList.remove('glare');
     }
     wrap.addEventListener('pointermove', onMove);

@@ -879,9 +879,9 @@ tbody tr:hover { background: var(--bg-hover); }
   animation: themeSweep 480ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 @keyframes themeSweep {
-  0% { transform: scale(0); opacity: 0.9; border-radius: 50%; }
-  60% { opacity: 0.9; border-radius: 8%; }
-  100% { transform: scale(2.5); opacity: 0; border-radius: 0; }
+  0% { transform: scale(0); opacity: 1; }
+  65% { opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root),
@@ -902,10 +902,15 @@ tbody tr:hover { background: var(--bg-hover); }
     padding: 12px 24px;
     gap: 4px;
     transform: translateY(-120%);
-    transition: transform 0.3s;
+    transition: transform 0.3s, visibility 0s linear 0.3s;
+    visibility: hidden;
     z-index: 99;
   }
-  .nav-links.open { transform: translateY(0); }
+  .nav-links.open {
+    transform: translateY(0);
+    transition: transform 0.3s, visibility 0s;
+    visibility: visible;
+  }
   .nav-burger { display: flex; }
   .nav-github span { display: none; }
   .hero-stats { gap: 24px; }
