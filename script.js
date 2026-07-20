@@ -190,17 +190,17 @@
   ];
 
   var MIRRORS = [
-    { key: 'gh-proxy-org', name: 'gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 188, ip: 'dual', desc: { zh: '默认镜像', en: 'Default mirror' }, def: true },
-    { key: 'gh-proxy-v4', name: 'v4.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 133, ip: 'v4', desc: { zh: '仅 IPv4 智能解析', en: 'IPv4-only smart resolution' }, def: false },
-    { key: 'gh-proxy-v6', name: 'v6.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 206, ip: 'v6', desc: { zh: 'IPv6/IPv4 双栈', en: 'IPv6/IPv4 dual-stack' }, def: false },
-    { key: 'gh-proxy-cdn', name: 'cdn.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 230, ip: 'v4', desc: { zh: 'Fastly CDN 加速', en: 'Fastly CDN accelerated' }, def: false },
-    { key: 'kkgithub', name: 'kkgithub.com', type: { zh: '域名替换', en: 'Domain swap' }, latency: 225, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
-    { key: 'github-akams', name: 'github.akams.cn', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 34, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
-    { key: 'gitclone', name: 'gitclone.com', type: { zh: '路径前缀', en: 'Path prefix' }, latency: 59, ip: 'v4', desc: { zh: 'CN 服务器', en: 'CN server' }, def: false },
-    { key: 'github-ur1', name: 'github.ur1.fun', type: { zh: '域名替换', en: 'Domain swap' }, latency: 197, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
-    { key: 'gh-proxy-com', name: 'gh-proxy.com', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 34, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
-    { key: 'ghproxy-net', name: 'ghproxy.net', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 255, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
-    { key: 'jihulab', name: 'jihulab.com', type: { zh: 'GitLab 极狐', en: 'GitLab (JiHu)' }, latency: 52, ip: 'dual', desc: { zh: '—', en: '—' }, def: false }
+    { key: 'gh-proxy-org', name: 'gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 104, ip: 'dual', desc: { zh: '默认镜像', en: 'Default mirror' }, def: true },
+    { key: 'gh-proxy-v4', name: 'v4.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 481, ip: 'v4', desc: { zh: '仅 IPv4 智能解析', en: 'IPv4-only smart resolution' }, def: false },
+    { key: 'gh-proxy-v6', name: 'v6.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 79, ip: 'v6', desc: { zh: 'IPv6/IPv4 双栈', en: 'IPv6/IPv4 dual-stack' }, def: false },
+    { key: 'gh-proxy-cdn', name: 'cdn.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 191, ip: 'v4', desc: { zh: 'Fastly CDN 加速', en: 'Fastly CDN accelerated' }, def: false },
+    { key: 'kkgithub', name: 'kkgithub.com', type: { zh: '域名替换', en: 'Domain swap' }, latency: 373, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
+    { key: 'github-akams', name: 'github.akams.cn', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 934, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
+    { key: 'gitclone', name: 'gitclone.com', type: { zh: '路径前缀', en: 'Path prefix' }, latency: 791, ip: 'v4', desc: { zh: 'CN 服务器', en: 'CN server' }, def: false },
+    { key: 'github-ur1', name: 'github.ur1.fun', type: { zh: '域名替换', en: 'Domain swap' }, latency: 69, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
+    { key: 'gh-proxy-com', name: 'gh-proxy.com', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 83, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
+    { key: 'ghproxy-net', name: 'ghproxy.net', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 203, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
+    { key: 'jihulab', name: 'jihulab.com', type: { zh: 'GitLab 极狐', en: 'GitLab (JiHu)' }, latency: 194, ip: 'dual', desc: { zh: '—', en: '—' }, def: false }
   ];
 
   var IP_LABELS = {
@@ -287,6 +287,7 @@
 
   /* ---------- 运行时状态 ---------- */
   var LANG = 'zh';
+  var STATUS_DATA = null;
 
   /* ---------- 工具 ---------- */
   function $(sel, ctx) { return (ctx || document).querySelector(sel); }
@@ -550,7 +551,7 @@
     applyStaticStrings();
     applyLangVars();
     renderFeatures();
-    renderMirrors();
+    renderMirrors(STATUS_DATA);
     renderOptions();
     renderUsage();
     renderProtection();
@@ -845,7 +846,7 @@
     applyStaticStrings();
     applyLangVars();
     renderFeatures();
-    renderMirrors();
+    renderMirrors(STATUS_DATA);
     renderOptions();
     renderUsage();
     renderProtection();
@@ -859,5 +860,12 @@
     initTerminalTilt();
     initNavHighlight();
     initLang();
+
+    /* 异步拉取 GitHub Release 镜像状态，到达后用真实延迟覆盖硬编码值并重渲染 */
+    fetchMirrorStatus(function (err, data) {
+      if (err || !data) return;
+      STATUS_DATA = data;
+      renderMirrors(STATUS_DATA);
+    });
   });
 })();
