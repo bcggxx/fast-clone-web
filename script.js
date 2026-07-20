@@ -189,7 +189,7 @@
     { key: 'gh-proxy-org', name: 'gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 188, ip: 'dual', desc: { zh: '默认镜像', en: 'Default mirror' }, def: true },
     { key: 'gh-proxy-v4', name: 'v4.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 133, ip: 'v4', desc: { zh: '仅 IPv4 智能解析', en: 'IPv4-only smart resolution' }, def: false },
     { key: 'gh-proxy-v6', name: 'v6.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 206, ip: 'v6', desc: { zh: 'IPv6/IPv4 双栈', en: 'IPv6/IPv4 dual-stack' }, def: false },
-    { key: 'gh-proxy-cdn', name: 'cdn.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 230, ip: 'dual', desc: { zh: 'Fastly CDN 加速', en: 'Fastly CDN accelerated' }, def: false },
+    { key: 'gh-proxy-cdn', name: 'cdn.gh-proxy.org', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 230, ip: 'v4', desc: { zh: 'Fastly CDN 加速', en: 'Fastly CDN accelerated' }, def: false },
     { key: 'kkgithub', name: 'kkgithub.com', type: { zh: '域名替换', en: 'Domain swap' }, latency: 225, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
     { key: 'github-akams', name: 'github.akams.cn', type: { zh: '前缀代理', en: 'Prefix proxy' }, latency: 34, ip: 'dual', desc: { zh: '—', en: '—' }, def: false },
     { key: 'gitclone', name: 'gitclone.com', type: { zh: '路径前缀', en: 'Path prefix' }, latency: 59, ip: 'v4', desc: { zh: 'CN 服务器', en: 'CN server' }, def: false },
