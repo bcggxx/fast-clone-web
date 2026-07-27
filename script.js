@@ -292,7 +292,11 @@
   /* ---------- 工具 ---------- */
   function $(sel, ctx) { return (ctx || document).querySelector(sel); }
   function $all(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
-  function T(key) { return (I18N[LANG] && I18N[LANG][key]) || (I18N.zh[key]) || key; }
+  function T(key) {
+    var v = (I18N[LANG] && I18N[LANG][key]) || I18N.zh[key];
+    if (v == null && window.console) console.warn('[fast-clone] missing i18n key:', key);
+    return v || key;
+  }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -312,25 +316,30 @@
   function parseMirrorStatusBody(body) {
     var result = { updated: '', items: {} };
     if (!body) return result;
-    var headerMatch = body.match(/—\s*([\d\-]+\s+[\d:]+\s+UTC)/);
-    if (headerMatch) result.updated = headerMatch[1];
-    var lines = body.split(/\r?\n/);
-    lines.forEach(function (line) {
-      var trimmed = line.trim();
-      if (trimmed.charAt(0) !== '|') return;
-      var cells = trimmed.split('|');
-      if (cells.length < 6) return;
-      var keyCell = cells[1].trim();
-      var keyMatch = keyCell.match(/^`([^`]+)`$/);
-      if (!keyMatch) return;
-      var key = keyMatch[1];
-      var latencyStr = cells[4].trim();
-      var statusStr = cells[5].trim();
-      var ms = null;
-      var mm = latencyStr.match(/([\d.]+)\s*ms/i);
-      if (mm) ms = parseFloat(mm[1]);
-      result.items[key] = { latency: ms, status: statusStr };
-    });
+    try {
+      var headerMatch = body.match(/—\s*([\d\-]+\s+[\d:]+\s+UTC)/);
+      if (headerMatch) result.updated = headerMatch[1];
+      var lines = body.split(/\r?\n/);
+      lines.forEach(function (line) {
+        var trimmed = line.trim();
+        if (trimmed.charAt(0) !== '|') return;
+        var cells = trimmed.split('|');
+        if (cells.length < 6) return;
+        var keyCell = cells[1].trim();
+        var keyMatch = keyCell.match(/^`([^`]+)`$/);
+        if (!keyMatch) return;
+        var key = keyMatch[1];
+        var latencyStr = cells[4].trim();
+        var statusStr = cells[5].trim();
+        var ms = null;
+        var mm = latencyStr.match(/([\d.]+)\s*ms/i);
+        if (mm) ms = parseFloat(mm[1]);
+        result.items[key] = { latency: ms, status: statusStr };
+      });
+    } catch (e) {
+      // Release body 格式异常时不要让整个表格挂掉，返回空结果回退到硬编码延迟
+      if (window.console) console.warn('[fast-clone] mirror-status 解析失败:', e);
+    }
     return result;
   }
 
@@ -354,7 +363,11 @@
         } catch (e) {}
         cb(null, data);
       })
-      .catch(function (err) { cb(err); });
+      .catch(function (err) {
+        // 网络失败时静默回退到 MIRRORS 里的硬编码延迟，但留一条 warn 便于排查
+        if (window.console) console.warn('[fast-clone] 镜像状态拉取失败，回退到内置延迟:', err);
+        cb(err);
+      });
   }
 
   function renderLatency(mirror, statusData) {
@@ -505,7 +518,7 @@
 
     var lineEls = $all('.term-line', body);
     if (animate) {
-      startReveal(lineEls);
+      startReveal(lineEls, body);
     } else {
       lineEls.forEach(function (line) {
         line.style.opacity = '1';
@@ -514,7 +527,7 @@
     }
   }
 
-  function startReveal(lineEls) {
+  function startReveal(lineEls, body) {
     lineEls.forEach(function (line) {
       line.style.opacity = '0';
       line.style.transform = 'translateX(-8px)';
@@ -651,16 +664,26 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
-    if (burger) {
-      burger.addEventListener('click', function () {
+    if (burger && links) {
+      function closeMenu() {
+        links.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+      burger.addEventListener('click', function (e) {
+        e.stopPropagation();
         var isOpen = links.classList.toggle('open');
         burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
       $all('a', links).forEach(function (a) {
-        a.addEventListener('click', function () {
-          links.classList.remove('open');
-          burger.setAttribute('aria-expanded', 'false');
-        });
+        a.addEventListener('click', closeMenu);
+      });
+      // Esc 关闭：仅在菜单展开时响应
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && links.classList.contains('open')) closeMenu();
+      });
+      // 点击导航外部关闭（burger 自身已 stopPropagation，避免点击它又触发关闭）
+      document.addEventListener('click', function (e) {
+        if (links.classList.contains('open') && !links.contains(e.target)) closeMenu();
       });
     }
 
@@ -776,8 +799,16 @@
 
     var MAX = 10;
     var DEFAULT_RY = -4, DEFAULT_RX = 2;
+    // rAF 节流：高刷新率屏幕上 pointermove 触发频率远超渲染帧率，
+    // 用 frame 标志位保证每帧最多更新一次 transform，避免掉帧
+    var rafId = null;
+    var pendingEvent = null;
 
-    function onMove(e) {
+    function applyTransform() {
+      rafId = null;
+      var e = pendingEvent;
+      pendingEvent = null;
+      if (!e) return;
       // 标题栏（顶部非命令行区域）不触发倾斜 / 反光动画
       if (e.target && e.target.closest && e.target.closest('.terminal-bar')) {
         onLeave();
@@ -799,7 +830,17 @@
       term.style.setProperty('--term-gy', (bpy * 100).toFixed(1) + '%');
       term.classList.add('glare');
     }
+
+    function onMove(e) {
+      pendingEvent = e;
+      if (rafId === null) rafId = window.requestAnimationFrame(applyTransform);
+    }
     function onLeave() {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+        rafId = null;
+        pendingEvent = null;
+      }
       term.style.setProperty('--term-ry', DEFAULT_RY + 'deg');
       term.style.setProperty('--term-rx', DEFAULT_RX + 'deg');
       term.classList.remove('glare');
