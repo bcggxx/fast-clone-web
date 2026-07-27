@@ -170,6 +170,24 @@ code, .mono { font-family: var(--mono); }
   font-weight: 800;
   font-size: 19px;
   letter-spacing: -0.5px;
+  /* 滚动时连同 gap 一起收起，避免图标右侧留空 */
+  transition: gap 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* wordmark：滚动后宽度/透明度归零，仿 Anthropic / trae.cn 收起为纯图标 */
+.nav-logo-text {
+  max-width: 150px;
+  opacity: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease 0.05s;
+}
+.nav.scrolled .nav-logo { gap: 0; }
+.nav.scrolled .nav-logo-text {
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease;
 }
 .nav-logo-icon { font-size: 22px; display: inline-flex; align-items: center; }
 .nav-logo-icon img {
