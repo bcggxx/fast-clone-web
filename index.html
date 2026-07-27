@@ -26,8 +26,22 @@
   <!-- 导航栏 -->
   <nav class="nav" id="nav">
     <div class="nav-inner">
-      <a href="#top" class="nav-logo">
-        <span class="nav-logo-icon"><img src="favicon.svg" alt="fast-clone" /></span>
+      <a href="#top" class="nav-logo" aria-label="fast-clone">
+        <span class="nav-logo-icon">
+          <svg class="nav-logo-svg" viewBox="0 0 512 512" width="22" height="22" role="img" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="fc-nav-bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#2dd4bf"/>
+                <stop offset="1" stop-color="#34d399"/>
+              </linearGradient>
+            </defs>
+            <rect class="fc-body" x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#fc-nav-bg)"/>
+            <path class="fc-branch" d="M168 200 C 168 300, 344 244, 344 308" fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round"/>
+            <circle class="fc-node" cx="168" cy="168" r="38" fill="#ffffff"/>
+            <circle class="fc-node" cx="344" cy="344" r="38" fill="#ffffff"/>
+            <path class="fc-bolt" d="M278 176 L206 276 L244 276 L228 336 L306 224 L266 224 Z" fill="#04201c"/>
+          </svg>
+        </span>
         <span class="nav-logo-text">fast-clone</span>
       </a>
       <ul class="nav-links" id="navLinks">
