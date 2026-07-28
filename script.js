@@ -311,6 +311,7 @@
   /* ---------- 镜像状态（GitHub Release） ---------- */
   var MIRROR_STATUS_API = 'https://api.github.com/repos/bcggxx/fast-clone/releases/tags/mirror-status';
   var MIRROR_STATUS_CACHE_KEY = 'fc-mirror-status';
+  var MIRROR_STATUS_ETAG_KEY = 'fc-mirror-status-etag';
   var MIRROR_STATUS_CACHE_TTL = 60 * 60 * 1000;
 
   function parseMirrorStatusBody(body) {
@@ -354,9 +355,41 @@
         }
       }
     } catch (e) {}
-    fetch(MIRROR_STATUS_API, { cache: 'no-store' })
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+    // 复用上次缓存的 ETag 做条件请求；命中 304 时无 body，省流量省解析
+    var etag = null;
+    try { etag = localStorage.getItem(MIRROR_STATUS_ETAG_KEY) || null; } catch (e) {}
+    var headers = { Accept: 'application/vnd.github+json' };
+    if (etag) headers['If-None-Match'] = etag;
+    fetch(MIRROR_STATUS_API, { cache: 'no-store', headers: headers })
+      .then(function (r) {
+        // 304 Not Modified：内容未变，复用缓存并刷新 TTL
+        if (r.status === 304) {
+          try {
+            var raw2 = localStorage.getItem(MIRROR_STATUS_CACHE_KEY);
+            if (raw2) {
+              var cached2 = JSON.parse(raw2);
+              if (cached2 && cached2.data) {
+                cached2.ts = Date.now();
+                localStorage.setItem(MIRROR_STATUS_CACHE_KEY, JSON.stringify(cached2));
+                cb(null, cached2.data);
+                return;
+              }
+            }
+          } catch (e) {}
+          // 缓存不可用时回退到硬编码延迟
+          cb(new Error('304 without usable cache'));
+          return;
+        }
+        if (!r.ok) return Promise.reject(new Error('HTTP ' + r.status));
+        // 保存新 ETag 供下次条件请求
+        var newEtag = r.headers.get('ETag');
+        if (newEtag) {
+          try { localStorage.setItem(MIRROR_STATUS_ETAG_KEY, newEtag); } catch (e) {}
+        }
+        return r.json();
+      })
       .then(function (rel) {
+        if (!rel) return;
         var data = parseMirrorStatusBody(rel.body || '');
         try {
           localStorage.setItem(MIRROR_STATUS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
