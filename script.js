@@ -661,7 +661,17 @@
       if (window.scrollY > 400) toTop.classList.add('show');
       else toTop.classList.remove('show');
     }
-    window.addEventListener('scroll', onScroll, { passive: true });
+    // rAF 节流：scroll 事件触发频率远高于渲染帧率，
+    // 用 frame 标志位合并多次触发为每帧一次，避免主线程被 layout 反复打断
+    var scrollRafId = null;
+    function onScrollRaf() {
+      scrollRafId = null;
+      onScroll();
+    }
+    function onScrollThrottled() {
+      if (scrollRafId === null) scrollRafId = window.requestAnimationFrame(onScrollRaf);
+    }
+    window.addEventListener('scroll', onScrollThrottled, { passive: true });
     onScroll();
 
     if (burger && links) {
