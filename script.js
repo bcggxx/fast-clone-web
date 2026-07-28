@@ -307,6 +307,14 @@
     if (ms <= 500) return 'latency-mid';
     return 'latency-slow';
   }
+  // 在浏览器空闲时段执行非关键任务；不支持 requestIdleCallback 时回退到 setTimeout
+  function runIdle(fn) {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(fn, { timeout: 1000 });
+    } else {
+      setTimeout(fn, 50);
+    }
+  }
 
   /* ---------- 镜像状态（GitHub Release） ---------- */
   var MIRROR_STATUS_API = 'https://api.github.com/repos/bcggxx/fast-clone/releases/tags/mirror-status';
@@ -929,13 +937,17 @@
     LANG = detectLang();
     applyStaticStrings();
     applyLangVars();
+    // 首屏关键内容（Hero / 终端 / 特性 / 镜像）同步渲染，保证 LCP 与可读性；
+    // 折叠下方的次要内容延迟到空闲时段，避免抢占首屏主线程时间
     renderFeatures();
     renderMirrors(STATUS_DATA);
-    renderOptions();
-    renderUsage();
-    renderProtection();
-    renderLicense();
     renderTerminal(true);
+    runIdle(function () {
+      renderOptions();
+      renderUsage();
+      renderProtection();
+      renderLicense();
+    });
 
     initTheme();
     initNav();
