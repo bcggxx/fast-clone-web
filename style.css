@@ -933,18 +933,33 @@ tbody tr:hover { background: var(--bg-hover); }
 .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
 /* ---------- 主题切换圆形过渡动画 ---------- */
-::view-transition-old(root),
-::view-transition-new(root) {
+/* View Transitions：新视图从点击位置圆形展开覆盖旧视图。
+   圆心/半径由 JS 通过 --theme-x / --theme-y / --theme-r 注入。
+   使用 CSS 关键帧而非 Element.animate(pseudoElement)，兼容移动端
+   Safari 等对伪元素 animate() 支持不佳的浏览器。
+   animation-fill-mode: both 让新视图在动画启动前即处于 circle(0)，
+   避免出现「整屏新色瞬间覆盖」的闪烁。 */
+::view-transition-old(root) {
   animation: none;
   mix-blend-mode: normal;
+  z-index: 1;
 }
-::view-transition-old(root) { z-index: 1; }
-::view-transition-new(root) { z-index: 9999; }
+::view-transition-new(root) {
+  animation: themeReveal 520ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  mix-blend-mode: normal;
+  z-index: 9999;
+}
+@keyframes themeReveal {
+  from { clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 50%)); }
+  to   { clip-path: circle(var(--theme-r, 150%) at var(--theme-x, 50%) var(--theme-y, 50%)); }
+}
 
-/* 降级：不支持 View Transitions 时的全屏遮罩淡入淡出 */
+/* 降级：不支持 View Transitions 时的圆形遮罩扩散。
+   不使用 inset:0，避免与 JS 设置的 width/height/left/top 定位冲突。
+   遮罩为新主题色，scale(1) 时直径 = 2*endRadius，半径 = 最远角距离，
+   恰好覆盖整个视口；此时再切换主题，用户不可见，最后淡出露出新主题。 */
 .theme-overlay {
   position: fixed;
-  inset: 0;
   z-index: 9998;
   pointer-events: none;
   border-radius: 50%;
@@ -952,12 +967,12 @@ tbody tr:hover { background: var(--bg-hover); }
   opacity: 0;
 }
 .theme-overlay.run {
-  animation: themeSweep 480ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: themeSweep 520ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 @keyframes themeSweep {
-  0% { transform: scale(0); opacity: 1; }
-  65% { opacity: 1; }
-  100% { transform: scale(2.5); opacity: 0; }
+  0%   { transform: scale(0); opacity: 1; }
+  55%  { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

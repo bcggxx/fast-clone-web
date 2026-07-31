@@ -644,25 +644,32 @@
           window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (document.startViewTransition && !reduceMotion) {
+          // 通过 CSS 变量把圆心/半径传给 ::view-transition-new(root) 的关键帧动画。
+          // 用 CSS 关键帧而非 Element.animate(pseudoElement) 以兼容移动端浏览器，
+          // 避免 WAAPI 的 pseudoElement 选项失效时新视图整屏覆盖。
+          var root = document.documentElement;
+          root.style.setProperty('--theme-x', x + 'px');
+          root.style.setProperty('--theme-y', y + 'px');
+          root.style.setProperty('--theme-r', endRadius + 'px');
           document.body.style.transition = 'none';
-          var transition = document.startViewTransition(function () { applyTheme(next); });
-          transition.ready.then(function () {
-            document.documentElement.animate(
-              {
-                clipPath: [
-                  'circle(0px at ' + x + 'px ' + y + 'px)',
-                  'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'
-                ]
-              },
-              {
-                duration: 520,
-                easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-                pseudoElement: '::view-transition-new(root)'
-              }
-            );
-          }).catch(function () { applyTheme(next); });
-          setTimeout(function () { document.body.style.transition = ''; }, 600);
+          try {
+            var transition = document.startViewTransition(function () { applyTheme(next); });
+            if (transition && transition.finished) {
+              transition.finished.then(function () {
+                document.body.style.transition = '';
+              }).catch(function () {
+                document.body.style.transition = '';
+              });
+            } else {
+              setTimeout(function () { document.body.style.transition = ''; }, 600);
+            }
+          } catch (e) {
+            document.body.style.transition = '';
+            applyTheme(next);
+          }
         } else if (!reduceMotion) {
+          // 降级：圆形遮罩（新主题色）从点击点扩散覆盖全屏，
+          // 待遮罩全覆盖（约 55% 处）后再切换主题，最后淡出，避免整屏瞬切。
           var bg = next === 'dark' ? '#0d1117' : '#ffffff';
           var overlay = document.createElement('div');
           overlay.className = 'theme-overlay';
@@ -677,11 +684,11 @@
           void overlay.offsetWidth;
           overlay.classList.add('run');
           document.body.style.transition = 'none';
-          applyTheme(next);
+          setTimeout(function () { applyTheme(next); }, 290);
           setTimeout(function () {
             document.body.style.transition = '';
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-          }, 520);
+          }, 540);
         } else {
           applyTheme(next);
         }
