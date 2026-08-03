@@ -750,11 +750,11 @@
     var nav = $('#nav');
     var burger = $('#navBurger');
     var links = $('#navLinks');
+    var toTop = $('#toTop');
 
     function onScroll() {
       if (window.scrollY > 10) nav.classList.add('scrolled');
       else nav.classList.remove('scrolled');
-      var toTop = $('#toTop');
       if (window.scrollY > 400) toTop.classList.add('show');
       else toTop.classList.remove('show');
     }
