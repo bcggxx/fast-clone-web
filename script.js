@@ -311,7 +311,8 @@
   var MIRROR_STATUS_API = 'https://api.github.com/repos/bcggxx/fast-clone/releases/tags/mirror-status';
   var MIRROR_STATUS_CACHE_KEY = 'fc-mirror-status';
   var MIRROR_STATUS_ETAG_KEY = 'fc-mirror-status-etag';
-  var MIRROR_STATUS_CACHE_TTL = 60 * 60 * 1000;
+  var MIRROR_STATUS_CACHE_TTL = 60 * 60 * 1000; // 1 小时
+  var MIRROR_STATUS_STALE_TTL = 24 * 60 * 60 * 1000; // 24 小时后完全过期
 
   function parseMirrorStatusBody(body) {
     var result = { updated: '', items: {} };
@@ -348,12 +349,36 @@
       var raw = localStorage.getItem(MIRROR_STATUS_CACHE_KEY);
       if (raw) {
         var cached = JSON.parse(raw);
-        if (cached && cached.ts && (Date.now() - cached.ts < MIRROR_STATUS_CACHE_TTL) && cached.data) {
-          cb(null, cached.data);
-          return;
+        if (cached && cached.ts && cached.data) {
+          var age = Date.now() - cached.ts;
+          // 如果缓存时间在 TTL 内，直接使用
+          if (age < MIRROR_STATUS_CACHE_TTL) {
+            cb(null, cached.data);
+            return;
+          }
+          // 如果缓存时间在 stale TTL 内，先返回缓存数据，然后后台更新
+          if (age < MIRROR_STATUS_STALE_TTL) {
+            cb(null, cached.data);
+            // 后台更新，不阻塞用户
+            updateMirrorStatusInBackground();
+            return;
+          }
         }
       }
     } catch (e) {}
+    // 没有缓存或缓存过期，进行网络请求
+    updateMirrorStatus(cb);
+  }
+
+  function updateMirrorStatusInBackground() {
+    updateMirrorStatus(function (err, data) {
+      if (err) {
+        if (window.console) console.warn('[fast-clone] 后台更新镜像状态失败:', err);
+      }
+    });
+  }
+
+  function updateMirrorStatus(cb) {
     // 复用上次缓存的 ETag 做条件请求；命中 304 时无 body，省流量省解析
     var etag = null;
     try { etag = localStorage.getItem(MIRROR_STATUS_ETAG_KEY) || null; } catch (e) {}
@@ -398,6 +423,13 @@
       .catch(function (err) {
         // 网络失败时静默回退到 MIRRORS 里的硬编码延迟，但留一条 warn 便于排查
         if (window.console) console.warn('[fast-clone] 镜像状态拉取失败，回退到内置延迟:', err);
+        // 显示提示让用户知道延迟数据可能不是最新的
+        var toast = document.getElementById('toast');
+        if (toast) {
+          toast.textContent = LANG === 'zh' ? '镜像延迟数据加载失败，显示默认值' : 'Mirror latency data failed, showing defaults';
+          toast.classList.add('show');
+          setTimeout(function () { toast.classList.remove('show'); }, 3000);
+        }
         cb(err);
       });
   }
@@ -560,21 +592,41 @@
   }
 
   function startReveal(lineEls, body) {
+    // 检查用户是否偏好减少动画
+    var reduceMotion = window.matchMedia && 
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (reduceMotion) {
+      // 如果用户偏好减少动画，直接显示所有行
+      lineEls.forEach(function (line) {
+        line.style.opacity = '1';
+        line.style.transform = 'translateX(0)';
+      });
+      return;
+    }
+
     lineEls.forEach(function (line) {
       line.style.opacity = '0';
       line.style.transform = 'translateX(-8px)';
-      line.style.transition = 'all 0.3s ease';
+      line.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
     });
     var started = false;
     function reveal() {
       if (started) return;
       started = true;
-      lineEls.forEach(function (line, i) {
-        setTimeout(function () {
-          line.style.opacity = '1';
-          line.style.transform = 'translateX(0)';
-        }, i * 130);
-      });
+      // 使用 requestAnimationFrame 优化动画性能
+      var index = 0;
+      function animateNext() {
+        if (index >= lineEls.length) return;
+        var line = lineEls[index];
+        line.style.opacity = '1';
+        line.style.transform = 'translateX(0)';
+        index++;
+        if (index < lineEls.length) {
+          setTimeout(animateNext, 130);
+        }
+      }
+      animateNext();
     }
     if ('IntersectionObserver' in window) {
       var target = lineEls[0] || body;
@@ -582,7 +634,7 @@
         entries.forEach(function (e) {
           if (e.isIntersecting) { reveal(); io.disconnect(); }
         });
-      }, { threshold: 0.2 });
+      }, { threshold: 0.2, rootMargin: '50px' });
       io.observe(target);
     } else {
       reveal();
@@ -642,20 +694,21 @@
           root.style.setProperty('--theme-x', x + 'px');
           root.style.setProperty('--theme-y', y + 'px');
           root.style.setProperty('--theme-r', endRadius + 'px');
-          document.body.style.transition = 'none';
+          // 使用 visibility: hidden 代替 transition: none 避免闪烁
+          document.body.style.visibility = 'hidden';
           try {
             var transition = document.startViewTransition(function () { applyTheme(next); });
             if (transition && transition.finished) {
               transition.finished.then(function () {
-                document.body.style.transition = '';
+                document.body.style.visibility = '';
               }).catch(function () {
-                document.body.style.transition = '';
+                document.body.style.visibility = '';
               });
             } else {
-              setTimeout(function () { document.body.style.transition = ''; }, 600);
+              setTimeout(function () { document.body.style.visibility = ''; }, 600);
             }
           } catch (e) {
-            document.body.style.transition = '';
+            document.body.style.visibility = '';
             applyTheme(next);
           }
         } else if (!reduceMotion) {
@@ -671,13 +724,18 @@
           overlay.style.height = (endRadius * 2) + 'px';
           overlay.style.marginLeft = -endRadius + 'px';
           overlay.style.marginTop = -endRadius + 'px';
+          // 使用 will-change 和 transform3d 触发 GPU 加速
+          overlay.style.willChange = 'transform, opacity';
+          overlay.style.transform = 'translate3d(0,0,0) scale(0)';
           document.body.appendChild(overlay);
+          // 强制重绘以确保初始状态应用
           void overlay.offsetWidth;
           overlay.classList.add('run');
           document.body.style.transition = 'none';
           setTimeout(function () { applyTheme(next); }, 290);
           setTimeout(function () {
             document.body.style.transition = '';
+            overlay.style.willChange = 'auto';
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
           }, 540);
         } else {
@@ -710,6 +768,7 @@
     function onScrollThrottled() {
       if (scrollRafId === null) scrollRafId = window.requestAnimationFrame(onScrollRaf);
     }
+    // 使用 passive 事件监听器提高滚动性能
     window.addEventListener('scroll', onScrollThrottled, { passive: true });
     onScroll();
 
