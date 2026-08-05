@@ -950,6 +950,17 @@ tbody tr:hover { background: var(--bg-hover); }
    Safari 等对伪元素 animate() 支持不佳的浏览器。
    animation-fill-mode: both 让新视图在动画启动前即处于 circle(0)，
    避免出现「整屏新色瞬间覆盖」的闪烁。 */
+/* 主题切换瞬间临时挂到 <html> 上：关闭所有元素的 CSS 过渡（保留 animation，
+   故 view-transition 关键帧照常播放）。否则 body / 卡片的 transition 会在
+   切换时插值，导致新视图快照捕获到「中间色」，圆形展开时露出半新半旧的杂色。
+   注意只置 transition:none，绝不能用 visibility:hidden——那会让新旧快照
+   都变成空白，圆形展开就变成「空白盖空白」。 */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: none !important;
+}
 ::view-transition-old(root) {
   animation: none;
   mix-blend-mode: normal;

@@ -693,21 +693,25 @@
           root.style.setProperty('--theme-x', x + 'px');
           root.style.setProperty('--theme-y', y + 'px');
           root.style.setProperty('--theme-r', endRadius + 'px');
-          // 使用 visibility: hidden 代替 transition: none 避免闪烁
-          document.body.style.visibility = 'hidden';
+          // 临时关闭所有 CSS 过渡：body / 卡片都带 transition，若任其插值，
+          // 新视图快照会捕获到「中间色」，圆形展开就露出半新半旧的杂色。
+          // 用 .theme-transitioning 类统一关闭 transition（保留 animation，
+          // view-transition 关键帧照常播放）。切勿用 visibility:hidden——
+          // 那会让新旧快照都变空白，圆形展开变成「空白盖空白」。
+          root.classList.add('theme-transitioning');
           try {
             var transition = document.startViewTransition(function () { applyTheme(next); });
             if (transition && transition.finished) {
               transition.finished.then(function () {
-                document.body.style.visibility = '';
+                root.classList.remove('theme-transitioning');
               }).catch(function () {
-                document.body.style.visibility = '';
+                root.classList.remove('theme-transitioning');
               });
             } else {
-              setTimeout(function () { document.body.style.visibility = ''; }, 600);
+              setTimeout(function () { root.classList.remove('theme-transitioning'); }, 600);
             }
           } catch (e) {
-            document.body.style.visibility = '';
+            root.classList.remove('theme-transitioning');
             applyTheme(next);
           }
         } else if (!reduceMotion) {
